@@ -33,7 +33,29 @@ function addNewLaunch(launch) {
     return newLaunch
 }
 
+async function scheduleNewLaunch(launch) {
+    const planet = await planets.findOne({
+        keplerName: launch.target,
+    });
+
+    if (!planet) {
+        throw new Error('No matching planet found');
+    }
+
+    const newFlightNumber = await getLatestFlightNumber() + 1;
+
+    const newLaunch = Object.assign(launch, {
+        success: true,
+        upcoming: true,
+        customers: ['Zero to Mastery', 'NASA'],
+        flightNumber: newFlightNumber,
+    });
+
+    await saveLaunch(newLaunch);
+}
+
 module.exports = {
     getAllLaunches,
-    addNewLaunch
+    addNewLaunch,
+    scheduleNewLaunch
 }
